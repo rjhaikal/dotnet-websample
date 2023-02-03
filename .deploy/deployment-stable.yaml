@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webproject-stable
+  name: webproject-stable
+spec:
+  replicas: 3
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: webproject-stable
+  template:
+    metadata:
+      labels:
+        app: webproject-stable
+    spec:
+      containers:
+      - image: rjhaikal/dotnet-websample:v1.0.0
+        imagePullPolicy: Always
+        name: webproject-stable
+        ports:
+        - containerPort: 80
+          name: webproject-stl
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webproject-stable
+  name: webproject-stable
+spec:
+  ports:
+  - name: "webproject-stl-service"
+    port: 80
+  selector:
+    app: webproject-stable

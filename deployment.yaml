@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webproject
+  name: webproject
+spec:
+  replicas: 3
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: webproject
+  template:
+    metadata:
+      labels:
+        app: webproject
+    spec:
+      containers:
+      - image: rjhaikal/dotnet-websample:v1.0.0
+        imagePullPolicy: Always
+        name: webproject
+        ports:
+        - containerPort: 80
+          name: webproject
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webproject
+  name: webproject
+spec:
+  ports:
+  - name: "webproject-service"
+    port: 80
+  selector:
+    app: webproject
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webproject-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: websample.rjhaikal.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: webproject
+                port:
+                  number: 80
